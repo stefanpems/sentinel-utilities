@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-The cmdlet Create-AnalyticRulesFromTemplates cmdlet automates the creation of Analytic Rules in Microsoft Sentinel.
+The cmdlet Create-AnalyticRulesFromTemplates automates the creation of Analytic Rules in Microsoft Sentinel.
 
 .DESCRIPTION
    Version: 0.0.1
