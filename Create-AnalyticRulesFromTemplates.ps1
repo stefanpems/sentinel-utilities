@@ -86,12 +86,13 @@ $ResourceGroup = "<...>"
 $Workspace = "<...>"
 $Region = "<...>" #e.g. westeurope
 $CsvSeparatorChar = ';'
+$SimulateOnly = $false
 $InputCsvFile = "<path>\<filename>.csv"
 $SeveritiesToInclude = @("High","Medium")
 
 Create-AnalyticRulesFromTemplates -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -Workspace $Workspace -Region $Region  `
     -CsvSeparatorChar $CsvSeparatorChar -InputCsvFile $InputCsvFile  `
-    -SeveritiesToInclude $SeveritiesToInclude #-verbose
+    -SeveritiesToInclude $SeveritiesToInclude -Simulate $SimulateOnly #-verbose
 
 .EXAMPLE
 ################
