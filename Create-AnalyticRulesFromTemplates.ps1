@@ -3,8 +3,8 @@
 The cmdlet Create-AnalyticRulesFromTemplates automates the creation of Analytic Rules in Microsoft Sentinel starting from existing Templates.
 
 .DESCRIPTION
-   Version: 0.0.2
-   Release Date: 2024-02-04
+   Version: 0.0.3
+   Release Date: 2024-02-05
 The cmdlet Create-AnalyticRulesFromTemplates creates the Analytic Rules (aka Rules) based on the Analytic Rules Templates (aka Templates) available 
 in the Content Hub Solutions (aka Packages) already installed in the Sentinel workspace. 
 Before using this cmdlet, ensure to have the desired Solutions installed and the related Connectors active.
@@ -328,7 +328,16 @@ function Create-AnalyticRulesFromTemplates {
         Write-Host "This cmdlet requires PowerShell 7. Exiting..." -ForegroundColor Red
         exit
     }
-
+    
+    #Check if Az.Accounts is installed
+    $module = Get-Module -ListAvailable -Name Az.Accounts
+    if($null -eq $module){
+        Write-Host "The module 'Az.Accounts' is required and is not installed." -ForegroundColor Red
+        Write-Host "To install it, open PowerShell as and Administrator and execute the following command: " -ForegroundColor Red
+        Write-Host "Install-Module -Name Az.Accounts" -ForegroundColor Red
+        Write-Host "Exiting..." -ForegroundColor Red
+        exit
+    }
     
     # Set default values for some parameters
     if($null -eq $CsvSeparatorChar){
