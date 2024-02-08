@@ -19,7 +19,7 @@ The creation of some Rules may terminate with an error because of missing conten
 
 How to launch it and what to expect? 
 1. Download this script
-2. Umcomment the "Launching section" at the end of this script (remove the opening "minor-sharp" and closing "major-sharp" surrounding that launching section)
+2. Uncomment the "Launching section" at the end of this script (remove the opening "minor-sharp" and closing "major-sharp" surrounding that launching section)
 3. Set the parameters according to your environment and needs. See the parameters explaination and the many examples here below.
 4. From powershell, launch the script. Before launching, I recommend to change the current directory to the directory containing the script. 
    Note: the directory from where you launch it will contain the output log file.
