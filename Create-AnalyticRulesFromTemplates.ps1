@@ -17,6 +17,17 @@ The execution can be simulated, so that the cmdlet only logs what it would do bu
 The log file is created in the same local directory from where the script is launched. 
 The creation of some Rules may terminate with an error because of missing content in Sentinel (e.g. missing tables). These errors are simply logged and the execution continues.
 
+How to launch it and what to expect? 
+1. Download this script
+2. Umcomment the "Launching section" at the end of this script (remove the opening "minor-sharp" and closing "major-sharp" surrounding that launching section)
+3. Set the parameters according to your environment and needs. See the parameters explaination and the many examples here below.
+4. From powershell, launch the script. Before launching, I recommend to change the current directory to the directory containing the script. 
+   Note: the directory from where you launch it will contain the output log file.
+5. If you are not blocked by the initial checks that verify the launching conditions, soon you'll see the classical "device login" message. Proceed with the authentication to Azure accordingly.  
+   Note: you need to authenticate with a user having the rights to read and create Analytic Rules and modify Solutins in Sentinel (min. role: Microsoft Sentinel Contributor).
+6. Wait for the end of the execution while reading the output messages.
+7. Read the final statistics. If needed, read the content of the log file. 
+
 .PARAMETER SubscriptionId
     (Mandatory, string) ID of the Azure Subscription containing the Sentinel workspace.
 
