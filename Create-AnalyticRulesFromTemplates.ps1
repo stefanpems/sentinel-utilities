@@ -6,7 +6,7 @@ The cmdlet Create-AnalyticRulesFromTemplates automates the creation of Analytic 
    Version: 0.0.3
    Release Date: 2024-02-05
 The cmdlet Create-AnalyticRulesFromTemplates creates the Analytic Rules (aka Rules) based on the Analytic Rules Templates (aka Templates) available 
-in the Content Hub Solutions (aka Packages) already installed in the Sentinel workspace. 
+in the Content Hub Solutions (aka Packages or Solutions) already installed in the Sentinel workspace. 
 Before using this cmdlet, ensure to have the desired Solutions installed and the related Connectors active.
 The Sentinel out-of-the-box Templates that are not part of any already installed Solutions are not considered by the cmdlet.
 The Templates that have already one or more active Rule associated to them are skipped: no additional Rule is created.
@@ -16,9 +16,12 @@ then use it as input file for filtering-out the Templates to be considered durin
 The execution can be simulated, so that the cmdlet only logs what it would do but without doing any real change to Sentinel.
 The log file is created in the same local directory from where the script is launched. 
 The creation of some Rules may terminate with an error because of missing content in Sentinel (e.g. missing tables). These errors are simply logged and the execution continues.
+A final comment: before running this script it is recommended to manually update the installed Solutions that have updates available, otherwise the Rules will be created 
+by using possibly older versions of their Templates. The result is that, when you compare the created Rule with the newer Template, you will see concrete differences. 
+This will not happen if you update the Solutions before launching the script. 
 
 How to launch it and what to expect? 
-1. Download this script
+1. Download this script from here
 2. Uncomment the "Launching section" at the end of this script (remove the opening "minor-sharp" and closing "major-sharp" surrounding that launching section)
 3. Set the parameters according to your environment and needs. See the parameters explaination and the many examples here below.
 4. From powershell, launch the script. Before launching, I recommend to change the current directory to the directory containing the script. 
