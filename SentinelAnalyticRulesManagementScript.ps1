@@ -918,7 +918,7 @@ function ExecuteRequest
                                     if(-not($backupError)){
                                         Write-Verbose "Template '$(($template).properties.displayName)' - Rule '$(($_).name)' / '$(($_).properties.displayName)' - Delete - About to delete rule"
                                         try {
-                                            DeleteRule -AuthHeader $authHeader-BaseUri $BaseUri -Rule ($_) -SimulateOnly $SimulateOnly
+                                            DeleteRule -AuthHeader $authHeader -BaseUri $BaseUri -Rule ($_) -SimulateOnly $SimulateOnly
                                             "Template '$(($template).properties.displayName)' - Rule '$(($_).name)' / '$(($_).properties.displayName)' - Delete - Rule deleted sucessfully"  | Out-File $oLogFile -Append
                                             $NumberOfDeletedRules++ | Out-Null
                                         }
