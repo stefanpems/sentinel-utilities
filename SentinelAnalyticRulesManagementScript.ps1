@@ -7,7 +7,7 @@ This script contains cmdlets that automates the massive creation, backup, deleti
    Release Date: 2024-03-03
    Author: Stefano Pescosolido (https://www.linkedin.com/in/stefanopescosolido/)
    Short Link: https://aka.ms/sarms
-   Presentation: TBD
+   Presentation & demo: https://www.youtube.com/watch?v=5WO6bfpkrTI <--- WATCH IT FOR SEEING THIS SCRIPT IN ACTION!!! 
 
 #############################
 
