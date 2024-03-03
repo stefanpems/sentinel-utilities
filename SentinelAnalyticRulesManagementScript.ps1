@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-This script contains cmdlets that automates the massive creation, deletion and update of Analytic Rules in Microsoft Sentinel.
+This script contains cmdlets that automates the massive creation, backup, deletion and update of Analytic Rules in Microsoft Sentinel.
 
 .DESCRIPTION
-   Version: 0.1
+   Version: 1.0
    Release Date: 2024-03-03
    Author: Stefano Pescosolido (https://www.linkedin.com/in/stefanopescosolido/)
    Presentation: TBD
