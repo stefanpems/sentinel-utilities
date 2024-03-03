@@ -39,7 +39,7 @@ Part of the code in this script is taken from https://github.com/Azure/Azure-Sen
 
 .DISCLAIMER
 This script is provided "as is", without warranty of any kind. 
-No extensive testing as been made. Use with cautions and at your own risk.
+No extensive testing as been made. Use with caution and at your own risk.
 
 #>
 
