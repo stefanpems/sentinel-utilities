@@ -1,5 +1,7 @@
 <#
 .SYNOPSIS
+--> Abandoned: please use SentinelAnalyticRulesManagementScript.ps1
+
 This script contains two cmdlets: 
 1. The cmdlet Invoke-SentinelAnalyticRulesCreationFromInstalledTemplates automates the creation of Analytic Rules in Microsoft Sentinel starting from existing Templates.
 2. The cmdlet Get-SentinelInstalledTemplatesAsCsv extracts in a CSV file the names of the Analytic Rules Templates installed in the workspace.
