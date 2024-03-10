@@ -1,4 +1,4 @@
-My stuff for managing Microsoft Sentinel.
+My stuff for Microsoft Sentinel.
 
 𝐒𝐞𝐧𝐭𝐢𝐧𝐞𝐥𝐀𝐧𝐚𝐥𝐲𝐭𝐢𝐜𝐑𝐮𝐥𝐞𝐬𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭𝐒𝐜𝐫𝐢𝐩𝐭.𝐩𝐬1 is a script containing cmdlets that automates the massive creation, backup, deletion and update of Analytic Rules in Microsoft Sentinel.
 Ideas for its improvement / evolution:
