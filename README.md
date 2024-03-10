@@ -7,4 +7,8 @@ Ideas for its improvement / evolution:
 3. Restore rules from their json ARM template files
 4. Update installed solutions in Content Hub
 5. Install specified solutions in Content Hub
+
 ...
+
+VerifyConditionalAccessImpact is a 𝐊𝐐𝐋 query to list which Conditional Access Policies in "Report-only" mode  would have forced MFA or blocked the sign-ins if they were set to "On".
+It requires the SigninLogs from Microsoft Entra to be collected in Sentinel
