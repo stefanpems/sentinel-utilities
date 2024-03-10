@@ -1,0 +1,13 @@
+//A 𝐊𝐐𝐋 query to list which Conditional Access Policies in "Report-only" mode  would have forced MFA or blocked the sign-ins if they were set to "On":
+
+SigninLogs
+| where tostring(parse_json(Status).errorCode) == 0 //Select only the successful sign-ins
+| mv-expand ConditionalAccessPolicies
+| extend caPolicyResult = tostring(parse_json(ConditionalAccessPolicies).result)
+| where caPolicyResult == "reportOnlyFailure" or caPolicyResult == "reportOnlyInterrupted" // they would have been blocked or impacted (MFA)
+| extend caPolicyDisplayName = tostring(parse_json(ConditionalAccessPolicies).displayName)
+| summarize count() by caPolicyDisplayName, caPolicyResult
+| order by count_
+
+//Remove the last 2 lines above and uncomment the following one if you want to see the details of each identified event
+//| project TimeGenerated, caPolicyDisplayName, UserDisplayName, UserPrincipalName, Location, IPAddress, AppDisplayName, ConditionalAccessStatus, IsInteractive, RiskLevelAggregated, RiskDetail, DeviceDetail, ResultType, ResultDescription, Status
