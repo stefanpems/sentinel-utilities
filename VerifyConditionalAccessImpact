@@ -1,4 +1,5 @@
-//A 𝐊𝐐𝐋 query to list which Conditional Access Policies in "Report-only" mode  would have forced MFA or blocked the sign-ins if they were set to "On":
+// This KQL query lists which Conditional Access Policies in "Report-only" mode would have forced MFA or blocked the sign-ins if they were set to "On".
+// It requires the SigninLogs from Microsoft Entra to be collected in Sentinel
 
 SigninLogs
 | where tostring(parse_json(Status).errorCode) == 0 //Select only the successful sign-ins
@@ -9,5 +10,5 @@ SigninLogs
 | summarize count() by caPolicyDisplayName, caPolicyResult
 | order by count_
 
-//Remove the last 2 lines above and uncomment the following one if you want to see the details of each identified event
+// Remove the last 2 lines above and uncomment the following one if you want to see the details of each identified event
 //| project TimeGenerated, caPolicyDisplayName, UserDisplayName, UserPrincipalName, Location, IPAddress, AppDisplayName, ConditionalAccessStatus, IsInteractive, RiskLevelAggregated, RiskDetail, DeviceDetail, ResultType, ResultDescription, Status
