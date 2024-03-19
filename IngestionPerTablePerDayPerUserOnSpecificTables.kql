@@ -45,5 +45,5 @@ Usage
         "EmailUrlInfo"),
         "MDO","n.a.")))
 | project Scope, DataType, AvgDailyIngestionKBperUser
-//| summarize sum(AvgDailyIngestionKBperUser) by Scope
+//| summarize AvgDailyIngestionKBperUserPerScope = sum(AvgDailyIngestionKBperUser) by Scope
 
