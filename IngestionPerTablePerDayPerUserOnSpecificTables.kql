@@ -1,0 +1,49 @@
+let total_days = 30d;
+let startdate = now(-total_days); 
+let enddate = now(); 
+let total_days_num = todouble(datetime_diff('day', enddate, startdate));
+let number_of_entra_users = toscalar( 
+SigninLogs | where TimeGenerated between (startdate .. enddate) | distinct UserPrincipalName | count
+);
+let number_of_office_users = toscalar( 
+OfficeActivity | where TimeGenerated between (startdate .. enddate) | distinct UserId | count
+);
+Usage
+| where TimeGenerated between (startdate .. enddate)
+| where DataType in ("AADManagedIdentitySignInLogs",
+    "AADNonInteractiveUserSignInLogs",
+    "AADProvisioningLogs",
+    "AADRiskyUsers",
+    "AADServicePrincipalSignInLogs",
+    "AADUserRiskEvents",
+    "ADFSSignInLogs",
+    "AuditLogs",
+    "O365API_CL",
+    "OfficeActivity",
+    "SigninLogs",
+    "EmailAttachmentInfo",
+    "EmailEvents",
+    "EmailPostDeliveryEvents",
+    "EmailUrlInfo")   
+| summarize BillableDataMB = sum(Quantity) by DataType, bin(TimeGenerated, 1d)
+| summarize AvgDailyIngestionKB = avg(BillableDataMB * 1024) by DataType
+| extend AvgDailyIngestionKBperUser = round(AvgDailyIngestionKB/todouble(number_of_entra_users),0) 
+| extend Scope = iif(DataType in ("AADManagedIdentitySignInLogs",
+    "AADNonInteractiveUserSignInLogs",
+    "AADProvisioningLogs",
+    "AADRiskyUsers",
+    "AADServicePrincipalSignInLogs",
+    "AADUserRiskEvents",
+    "ADFSSignInLogs",
+    "AuditLogs",
+    "SigninLogs"),
+    "Entra",iif(DataType in ("O365API_CL",
+        "OfficeActivity"),
+        "O365",iif(DataType in ("EmailAttachmentInfo",
+        "EmailEvents",
+        "EmailPostDeliveryEvents",
+        "EmailUrlInfo"),
+        "MDO","n.a.")))
+| project Scope, DataType, AvgDailyIngestionKBperUser
+//| summarize sum(AvgDailyIngestionKBperUser) by Scope
+
