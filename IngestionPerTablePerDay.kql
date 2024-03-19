@@ -1,0 +1,10 @@
+let total_days = 30d;
+let startdate = now(-total_days); 
+let enddate = now(); 
+let total_days_num = todouble(datetime_diff('day', enddate, startdate));
+Usage
+| where TimeGenerated between (startdate .. enddate)
+| summarize BillableDataMB = sum(Quantity) by DataType, bin(TimeGenerated, 1d)
+| project TimeGenerated, DataType, BillableDataMB
+| render timechart 
+
