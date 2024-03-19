@@ -1,6 +1,6 @@
-let total_days = 30d;
+let total_days = 30d; //--> Change as needed
 let startdate = now(-total_days); 
-let enddate = now(); 
+let enddate = now(); //--> Change as needed
 let total_days_num = todouble(datetime_diff('day', enddate, startdate));
 Usage
 | where TimeGenerated between (startdate .. enddate)
