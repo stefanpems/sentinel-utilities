@@ -1,0 +1,17 @@
+openapi: 3.0.0
+
+info:
+    title: Sentinel SOC Optimization
+    description: Skills to retrieve the recommendations provided by the "SOC Optimization" feature in Microsoft Sentinel.
+    version: "0.0.1"
+
+paths:
+    /recommendations?api-version=2024-01-01-preview:
+        get: 
+            operationId: GetRecommendations
+            summary: Gets a list of all recommendations made available by the "SOC Optimization" experience in Microsoft Sentinel.
+            responses:
+                200:
+                    description: Successful authentication. 
+                401:
+                    description: Unsuccessful authentication.

@@ -1,0 +1,37 @@
+Descriptor:
+  Name: Microsoft Sentinel SOC Optimization 
+  DisplayName: Microsoft Sentinel SOC Optimization (Community release)
+  Description: SOC Optimization is a feature of Microsoft Sentinel that provides three kind of recommendations. 
+    Firstly, it provides daily adaptive strategies for optimal data utilization and attack detection. 
+    Secondly, it provides actionable insights into data usage patterns for threat protection and cost optimization. 
+    Lastly, it provides threat-based recommendations using the MITRE ATT&CK framework.
+    The following are examples of recommendations provided by "SOC Optimization"
+    "Low usage of <table_name> table (Table <table_name> wasn't queried in the last 30 days)"
+    "Coverage improvement against AiTM (Adversary in the Middle)
+    "Coverage improvement against BEC (Financial Fraud)
+    "Coverage improvement against ERP (SAP) Financial Process Manipulation"
+    "Coverage improvement against BEC (Mass Credential Harvest)"
+    "Coverage improvement against Human Operated Ransomware"
+    "Coverage improvement against IaaS Resource Theft"
+  DescriptionForModel: Skills for getting a GET REST API call reflection. Uses ReflectionData as operationId
+  Settings:
+  - Name: SentinelApiUrl
+    Label: Microsoft Sentinel APIs URL
+    Description: The URL of the Microsoft Sentinel APIs. Specify your subscriptionId, resourceGroupName and workspaceName.
+    HintText: "Set your subscriptionId, resourceGroupName and workspaceName"
+    DefaultValue: "https://management.azure.com/subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/Microsoft.OperationalInsights/workspaces/<workspaceName>/providers/Microsoft.SecurityInsights"
+    SettingType: String
+    Required: true
+  Authorization:
+    #Type: OAuthAuthorizationCodeFlow
+    Type: OAuthClientCredentialsFlow
+    ClientId: f0b91c6e-a082-4be9-9d27-7266265c83d5 #<id of client that wants to auth>
+    TokenEndpoint: https://login.microsoftonline.com/common/oauth2/authorize
+    Scopes: user_impersonation
+    AuthorizationContentType: application/x-www-form-urlencoded
+SkillGroups:
+  - Format: API
+    Settings:
+      # Replace this with your own URL where the OpenAPI spec file is located.
+      OpenApiSpecUrl:  http://172.13.112.25:5000/file/API_Plugin_Reflection_OAI_GET_Simple_Header.yaml
+      EndpointUrlSettingName: SentinelApiUrl
