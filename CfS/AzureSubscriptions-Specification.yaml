@@ -1,0 +1,17 @@
+openapi: 3.0.0
+
+info:
+    title: Azure Subscriptions APIs
+    description: Skills for retrieving the list of Azure Subscriptions and the details of each single Azure Subscription
+    version: "0.0.1"
+
+paths:
+    /subscriptions?api-version=2016-06-01:
+        get: 
+            operationId: ListSubscriptions
+            summary: Gets a list of all Microsoft Azure Subscriptions.
+            responses:
+                200:
+                    description: Successful authentication. 
+                401:
+                    description: Unsuccessful authentication.
