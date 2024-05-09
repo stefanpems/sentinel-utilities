@@ -1,0 +1,17 @@
+openapi: 3.0.0
+
+info:
+    title: Azure Log Analytics APIs
+    description: Skills for retrieving the list of Azure Log Analytics and the details of each single Azure Log Analytics workspace
+    version: "0.0.1"
+
+paths:
+    /workspaces?api-version=2023-09-01:
+        get: 
+            operationId: ListLogAnalytics
+            summary: Gets a list of all Microsoft Log Analytics workspaces.
+            responses:
+                200:
+                    description: Successful authentication. 
+                401:
+                    description: Unsuccessful authentication.
