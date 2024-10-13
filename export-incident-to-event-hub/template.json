@@ -1,0 +1,680 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+      "title": "Export a Sentinel incident to Event Hub",
+      "description": "This Logic App exports the triggering Sentinel incident to Event Hub. Before the export, the Logic App adds into the JSON the URL of the incident in the new Unified portal. The JSON of the incident includes the information related to the alerts and the entities of the incident",
+      "prerequisites": "",
+      "postDeployment": ["1. Authorize Microsoft Sentinel on the resource group of the Logic App.", "2. Authorize the Managed Identity of the Logic App to send data to Event Hub."],
+      "prerequisitesDeployTemplateFile": "",
+      "lastUpdateTime": "",
+      "entities": [],
+      "tags": [],
+      "author": {
+          "name": "Stefano Pescosolido"
+      }
+  },
+  "parameters": {
+    "logicAppName": {
+      "type": "string",
+      "defaultValue": "Sentinel-ExportIncidentWithUrlInUnifiedPortal",
+      "metadata": {
+        "description": "Name of the Logic App."
+      }
+    },
+    "eventHubName": {
+      "type": "string",
+      "defaultValue": "write-your-event-hub-name-here",
+      "metadata": {
+        "description": "Name of the Event Hub."
+      }
+    }
+  },
+  "variables": {    
+    "MicrosoftSentinelConnectionName": "[concat('MicrosoftSentinel-', parameters('logicAppName'))]",
+    "EventHubConnectionName": "[concat('EventHub-', parameters('logicAppName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2019-05-01",
+      "name": "[parameters('logicAppName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+          "LogicAppsCategory": "security",
+          "hidden-SentinelTemplateName": "[parameters('logicAppName')]",
+          "hidden-SentinelTemplateVersion": "1.0"
+      },
+      "properties": {
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "EventHub Name": {
+              "defaultValue": "[parameters('eventHubName')]",
+              "type": "String"
+            },
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "Microsoft_Sentinel_incident": {
+              "type": "ApiConnectionWebhook",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['microsoftsentinel-connection']['connectionId']"
+                  }
+                },
+                "body": {
+                  "callback_url": "@{listCallbackUrl()}"
+                },
+                "path": "/incident-creation"
+              }
+            }
+          },
+          "actions": {
+            "Read_and_parse_Incident": {
+              "runAfter": {},
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@triggerBody()",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "headers": {
+                      "type": "object",
+                      "properties": {
+                        "Accept-Encoding": {
+                          "type": "string"
+                        },
+                        "Host": {
+                          "type": "string"
+                        },
+                        "Max-Forwards": {
+                          "type": "string"
+                        },
+                        "Correlation-Context": {
+                          "type": "string"
+                        },
+                        "traceparent": {
+                          "type": "string"
+                        },
+                        "x-ms-client-tracking-id": {
+                          "type": "string"
+                        },
+                        "x-ms-correlation-request-id": {
+                          "type": "string"
+                        },
+                        "x-ms-forward-internal-correlation-id": {
+                          "type": "string"
+                        },
+                        "X-ARR-LOG-ID": {
+                          "type": "string"
+                        },
+                        "CLIENT-IP": {
+                          "type": "string"
+                        },
+                        "DISGUISED-HOST": {
+                          "type": "string"
+                        },
+                        "X-SITE-DEPLOYMENT-ID": {
+                          "type": "string"
+                        },
+                        "WAS-DEFAULT-HOSTNAME": {
+                          "type": "string"
+                        },
+                        "X-Forwarded-Proto": {
+                          "type": "string"
+                        },
+                        "X-AppService-Proto": {
+                          "type": "string"
+                        },
+                        "X-ARR-SSL": {
+                          "type": "string"
+                        },
+                        "X-Forwarded-TlsVersion": {
+                          "type": "string"
+                        },
+                        "X-Forwarded-For": {
+                          "type": "string"
+                        },
+                        "X-Original-URL": {
+                          "type": "string"
+                        },
+                        "X-WAWS-Unencoded-URL": {
+                          "type": "string"
+                        },
+                        "Content-Length": {
+                          "type": "string"
+                        },
+                        "Content-Type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "body": {
+                      "type": "object",
+                      "properties": {
+                        "eventUniqueId": {
+                          "type": "string"
+                        },
+                        "objectSchemaType": {
+                          "type": "string"
+                        },
+                        "objectEventType": {
+                          "type": "string"
+                        },
+                        "workspaceInfo": {
+                          "type": "object",
+                          "properties": {
+                            "SubscriptionId": {
+                              "type": "string"
+                            },
+                            "ResourceGroupName": {
+                              "type": "string"
+                            },
+                            "WorkspaceName": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "workspaceId": {
+                          "type": "string"
+                        },
+                        "object": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "etag": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "properties": {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string"
+                                },
+                                "severity": {
+                                  "type": "string"
+                                },
+                                "status": {
+                                  "type": "string"
+                                },
+                                "owner": {
+                                  "type": "object",
+                                  "properties": {
+                                    "objectId": {},
+                                    "email": {},
+                                    "assignedTo": {},
+                                    "userPrincipalName": {}
+                                  }
+                                },
+                                "labels": {
+                                  "type": "array"
+                                },
+                                "firstActivityTimeUtc": {
+                                  "type": "string"
+                                },
+                                "lastActivityTimeUtc": {
+                                  "type": "string"
+                                },
+                                "lastModifiedTimeUtc": {
+                                  "type": "string"
+                                },
+                                "createdTimeUtc": {
+                                  "type": "string"
+                                },
+                                "incidentNumber": {
+                                  "type": "integer"
+                                },
+                                "additionalData": {
+                                  "type": "object",
+                                  "properties": {
+                                    "alertsCount": {
+                                      "type": "integer"
+                                    },
+                                    "bookmarksCount": {
+                                      "type": "integer"
+                                    },
+                                    "commentsCount": {
+                                      "type": "integer"
+                                    },
+                                    "alertProductNames": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "tactics": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "techniques": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "relatedAnalyticRuleIds": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "incidentUrl": {
+                                  "type": "string"
+                                },
+                                "providerName": {
+                                  "type": "string"
+                                },
+                                "providerIncidentId": {
+                                  "type": "string"
+                                },
+                                "alerts": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "type": "string"
+                                      },
+                                      "properties": {
+                                        "type": "object",
+                                        "properties": {
+                                          "systemAlertId": {
+                                            "type": "string"
+                                          },
+                                          "tactics": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "alertDisplayName": {
+                                            "type": "string"
+                                          },
+                                          "description": {
+                                            "type": "string"
+                                          },
+                                          "confidenceLevel": {
+                                            "type": "string"
+                                          },
+                                          "severity": {
+                                            "type": "string"
+                                          },
+                                          "vendorName": {
+                                            "type": "string"
+                                          },
+                                          "productName": {
+                                            "type": "string"
+                                          },
+                                          "productComponentName": {
+                                            "type": "string"
+                                          },
+                                          "alertType": {
+                                            "type": "string"
+                                          },
+                                          "processingEndTime": {
+                                            "type": "string"
+                                          },
+                                          "status": {
+                                            "type": "string"
+                                          },
+                                          "endTimeUtc": {
+                                            "type": "string"
+                                          },
+                                          "startTimeUtc": {
+                                            "type": "string"
+                                          },
+                                          "timeGenerated": {
+                                            "type": "string"
+                                          },
+                                          "providerAlertId": {
+                                            "type": "string"
+                                          },
+                                          "resourceIdentifiers": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string"
+                                                },
+                                                "workspaceId": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "required": [
+                                                "type",
+                                                "workspaceId"
+                                              ]
+                                            }
+                                          },
+                                          "additionalData": {
+                                            "type": "object",
+                                            "properties": {
+                                              "ProcessedBySentinel": {
+                                                "type": "string"
+                                              },
+                                              "Alert generation status": {
+                                                "type": "string"
+                                              },
+                                              "Query Period": {
+                                                "type": "string"
+                                              },
+                                              "Trigger Operator": {
+                                                "type": "string"
+                                              },
+                                              "Trigger Threshold": {
+                                                "type": "string"
+                                              },
+                                              "Correlation Id": {
+                                                "type": "string"
+                                              },
+                                              "Analytics Template Id": {
+                                                "type": "string"
+                                              },
+                                              "Search Query Results Overall Count": {
+                                                "type": "string"
+                                              },
+                                              "Data Sources": {
+                                                "type": "string"
+                                              },
+                                              "Query": {
+                                                "type": "string"
+                                              },
+                                              "Query Start Time UTC": {
+                                                "type": "string"
+                                              },
+                                              "Query End Time UTC": {
+                                                "type": "string"
+                                              },
+                                              "Analytic Rule Ids": {
+                                                "type": "string"
+                                              },
+                                              "Event Grouping": {
+                                                "type": "string"
+                                              },
+                                              "Analytic Rule Name": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "friendlyName": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "type",
+                                      "kind",
+                                      "properties"
+                                    ]
+                                  }
+                                },
+                                "bookmarks": {
+                                  "type": "array"
+                                },
+                                "relatedEntities": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "type": "string"
+                                      },
+                                      "properties": {
+                                        "type": "object",
+                                        "properties": {
+                                          "accountName": {
+                                            "type": "string"
+                                          },
+                                          "upnSuffix": {
+                                            "type": "string"
+                                          },
+                                          "aadTenantId": {
+                                            "type": "string"
+                                          },
+                                          "aadUserId": {
+                                            "type": "string"
+                                          },
+                                          "isDomainJoined": {
+                                            "type": "boolean"
+                                          },
+                                          "displayName": {
+                                            "type": "string"
+                                          },
+                                          "additionalData": {
+                                            "type": "object",
+                                            "properties": {
+                                              "Sources": {
+                                                "type": "string"
+                                              },
+                                              "GivenName": {
+                                                "type": "string"
+                                              },
+                                              "IsDeleted": {
+                                                "type": "string"
+                                              },
+                                              "IsEnabled": {
+                                                "type": "string"
+                                              },
+                                              "Surname": {
+                                                "type": "string"
+                                              },
+                                              "TransitiveDirectoryRoles": {
+                                                "type": "string"
+                                              },
+                                              "UserType": {
+                                                "type": "string"
+                                              },
+                                              "UpnName": {
+                                                "type": "string"
+                                              },
+                                              "SyncFromAad": {
+                                                "type": "string"
+                                              },
+                                              "Country": {
+                                                "type": "string"
+                                              },
+                                              "MailAddress": {
+                                                "type": "string"
+                                              },
+                                              "PhoneNumber": {
+                                                "type": "string"
+                                              },
+                                              "AdditionalMailAddresses": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "friendlyName": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "type",
+                                      "kind",
+                                      "properties"
+                                    ]
+                                  }
+                                },
+                                "comments": {
+                                  "type": "array"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "Initialize_and_set_variable_OriginalIncident": {
+              "runAfter": {
+                "Read_and_parse_Incident": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "OriginalIncident",
+                    "type": "object",
+                    "value": "@body('Read_and_parse_Incident')"
+                  }
+                ]
+              }
+            },
+            "Add_property_unifiedIncidentUrl_to_ModifiedIncident": {
+              "runAfter": {
+                "Initialize_variable_ModifiedIncident": [
+                  "Succeeded"
+                ]
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "ModifiedIncident",
+                "value": "@setProperty(variables('OriginalIncident')['object'],'unifiedIncidentUrl',concat('https://security.microsoft.com/incident2/',variables('OriginalIncident')['object']['properties']['providerIncidentId'],'/overview'))"
+              }
+            },
+            "Initialize_variable_ModifiedIncident": {
+              "runAfter": {
+                "Initialize_and_set_variable_OriginalIncident": [
+                  "Succeeded"
+                ]
+              },
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "ModifiedIncident",
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "Send_ModifiedIncident_to_EventHub": {
+              "runAfter": {
+                "Add_property_unifiedIncidentUrl_to_ModifiedIncident": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['eventhub-connection']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "body": {
+                  "ContentData": "@base64(variables('ModifiedIncident'))"
+                },
+                "path": "/@{encodeURIComponent(parameters('EventHub Name'))}/events"
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "microsoftsentinel-connection": {
+                "id": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Web/locations/',resourceGroup().location,'/managedApis/Azuresentinel')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', variables('MicrosoftSentinelConnectionName'))]",
+                "connectionName": "[variables('MicrosoftSentinelConnectionName')]",
+                "connectionProperties": {
+                  "authentication": {
+                    "type": "ManagedServiceIdentity"
+                  }
+                }
+              },
+              "eventhub-connection": {
+                "id": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Web/locations/',resourceGroup().location,'/managedApis/eventhubs')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', variables('EventHubConnectionName'))]",
+                "connectionName": "[variables('EventHubConnectionName')]"
+              }
+            }
+          }
+        }
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      }
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('EventHubConnectionName')]",
+      "kind": "V1",
+      "properties": {
+        "api": {
+          "id": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Web/locations/',resourceGroup().location,'/managedApis/eventhubs')]"
+        },
+        "customParameterValues": {},
+        "displayName": "[variables('EventHubConnectionName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('MicrosoftSentinelConnectionName')]",
+      "kind": "V1",
+      "properties": {
+        "api": {
+          "id": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Web/locations/',resourceGroup().location,'/managedApis/Azuresentinel')]"
+        },
+        "customParameterValues": {},
+        "parameterValueType": "Alternative",
+        "displayName": "[variables('MicrosoftSentinelConnectionName')]"
+      }
+    }
+  ],
+  "outputs": {}
+}
