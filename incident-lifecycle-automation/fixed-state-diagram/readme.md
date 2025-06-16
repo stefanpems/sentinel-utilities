@@ -54,3 +54,5 @@ This is an automation based on a fixed state diagram, as described in the articl
   - Assign the corresponding Managed Identity the role of Microsoft Sentinel Responder on the resource group or Sentinel workspace
   - Authorize the API connection to Office 365 / SharePoint Online
   - Verify the correctness of the parameters; modify their values if necessary
+ 
+* Authorize Sentinel / Defender XDR to run the Logic App NewIncidentFlow
