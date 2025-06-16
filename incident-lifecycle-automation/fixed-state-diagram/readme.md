@@ -1,73 +1,55 @@
-# Incident Lifecycle Automation with Azure Logic Apps
 
-Questo repository contiene i template dei workflow (Azure Logic App) per realizzare l'automazione descritta nell'articolo [Incident Lifecycle Automation in the Microsoft Unified Security Operations Platform](https://www.linkedin.com/pulse/incident-lifecycle-automation-microsoft-unified-stefano-pescosolido-yro9f/).
+Template dei workflow (Azure Logic App) per realizzare l'automazione descritta in [Incident Lifecycle Automation in the Microsoft Unified Security Operations Platform](https://www.linkedin.com/pulse/incident-lifecycle-automation-microsoft-unified-stefano-pescosolido-yro9f/)
 
-L'automazione segue un diagramma di stato fisso, come descritto nell'articolo.
+Si tratta di un'automazione con un diagramma di stato fisso, come descritto nell'articolo.
 
-## Installazione
+## Installation Steps
 
-### 1. Creazione dei Gruppi Entra
+* If not already available, create 3 Entra groups representing SOC Tiers 3, 2, and 1.
 
-Creare 3 gruppi Entra rappresentativi dei Tier 3, 2 e 1 del SOC.
+  NOTE: In this implementation, Tier 3 is considered the entry level of the SOC, i.e., the lowest in the hierarchy. Escalation proceeds to Tier 2 and then Tier 1. If you wish to change the numerical order of escalation for the 3 tiers, you must modify the logic app `UpdatedInvestigationFlow`, specifically the switch condition on the current Tier in the logical branch related to the escalate action.
 
-> **Nota:** In questa implementazione, il Tier 3 è considerato l'entry level del SOC, ovvero il più basso nella gerarchia. Si scala al Tier 2 e quindi al Tier 1. Se si desidera cambiare l'ordine numerico dell'escalation per i 3 tier, è necessario modificare la logic app `UpdatedInvestigationFlow`, in particolare la condizione di switch sul Tier attuale presente nel ramo logico relativo all'action di escalate.
+* Prepare the SharePoint list used as storage for investigations. Columns:
+  - Title (Single line of text)
+  - Main Incident (Hyperlink or Picture)
+  - Status (Choice - Possible values: New, Assigned, Closed)
+  - Tier (Choice - Possible values: T3, T2, T1)
+  - Assigned to (Person or Group)
+  - Tasks (Lookup - Allow Multiple Choice)
+  - Action (Choice - Possible values: None, Assign, Escalate, Close, Reopen)
+  - Notes (Multiple lines of text)
+  - Incident ARM ID (Single line of text)
+  - Classification (Choice - Possible values: BenignPositive - SuspiciousButExpected, FalsePositive - InaccurateData, FalsePositive - IncorrectAlertLogic, TruePositive - SuspiciousActivity, Undetermined)
 
-### 2. Lista SharePoint per le Investigations
+  NOTES:
+  - The Tasks column of type Lookup must point to the Tasks list. Therefore, it can only be created after the Tasks list has been created.
+  - In this list, create 3 custom views filtering by Status not equal to Closed and Tier equal to T3, T2, and T1 respectively. Name these views T3, T2, and T1. The corresponding URL must be saved as the access URL to the investigations list for Tier 3, 2, and 1 operators respectively.
+  - You may, if desired, change the field order as they appear in the T3, T2, and T1 views and in the data entry forms.
+  - It is possible and recommended to modify the data display form (Configure Layout / Body) so that the fields Status, Title, Main Incident, and Incident ARM ID are read-only.
 
-Creare una lista SharePoint con le seguenti colonne:
+* In the same SharePoint site collection, prepare the SharePoint list used as storage for tasks. Columns:
+  - Title (Single line of text)
+  - Assigned to (Person or Group)
+  - Due date (Date and Time)
+  - Instructions (Multiple lines of text)
+  - Notes (Multiple lines of text)
+  - Completed (Yes/No)
+  - Investigation (Lookup)
 
-- `Title` (Single line of text)
-- `Main Incident` (Hyperlink or Picture)
-- `Status` (Choice - Valori: New, Assigned, Closed)
-- `Tier` (Choice - Valori: T3, T2, T1)
-- `Assigned to` (Person or Group)
-- `Tasks` (Lookup - Allow Multiple Choice)
-- `Action` (Choice - Valori: None, Assign, Escalate, Close, Reopen)
-- `Notes` (Multiple lines of text)
-- `Incident ARM ID` (Single line of text)
-- `Classification` (Choice - Valori: 
-  - BenignPositive - SuspiciousButExpected
-  - FalsePositive - InaccurateData
-  - FalsePositive - IncorrectAlertLogic
-  - TruePositive - SuspiciousActivity
-  - Undetermined)
+  NOTES:
+  - The Investigation column of type Lookup must point to the Investigations list. Therefore, it can only be created after the Investigations list has been created.
+  - In this list, create 3 custom views filtering by appropriate criteria.
+  - You may, if desired, change the field order as they appear in the views and in the data entry forms.
 
-> **Note:**
-> - La colonna `Tasks` deve puntare alla lista `Tasks`, quindi può essere creata solo dopo la creazione di quest'ultima.
-> - Creare 3 viste personalizzate filtrando per `Status` diverso da `Closed` e `Tier` uguale a T3, T2 e T1. Chiamare queste viste `T3`, `T2` e `T1`.
-> - È possibile modificare l'ordine dei campi nelle viste e nei form.
-> - È consigliato rendere `Status`, `Title`, `Main Incident` e `Incident ARM ID` di sola lettura nella visualizzazione dati.
+* Install the two logic apps using the templates published here - Use these two links:
 
-### 3. Lista SharePoint per i Tasks
+  1. [![Deploy NewIncidentFlow to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstefanpems%2Fsentinel-utilities%2Frefs%2Fheads%2Fmain%2Fincident-lifecycle-automation%2Ffixed-state-diagram%2Fincident-lifecycle-NewIncidentFlow-azuredeploy.json)
 
-Creare una lista SharePoint con le seguenti colonne:
+  2. [![Deploy UpdatedInvestigationFlow to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstefanpems%2Fsentinel-utilities%2Frefs%2Fheads%2Fmain%2Fincident-lifecycle-automation%2Ffixed-state-diagram%2Fincident-lifecycle-UpdatedInvestigationFlow-azuredeploy.json)
 
-- `Title` (Single line of text)
-- `Assigned to` (Person or Group)
-- `Due date` (Date and Time)
-- `Instructions` (Multiple lines of text)
-- `Notes` (Multiple lines of text)
-- `Completed` (Yes/No)
-- `Investigation` (Lookup)
+  NOTE: In the deployment parameters of the two logic apps, use the references to the groups and lists created as described above.
 
-> **Note:**
-> - La colonna `Investigation` deve puntare alla lista `Investigations`, quindi può essere creata solo dopo la creazione di quest'ultima.
-> - È possibile modificare l'ordine dei campi nelle viste e nei form.
-
-### 4. Installazione delle Logic App
-
-Utilizzare i seguenti link per installare le due logic app:
-
-1. [![Deploy NewIncidentFlow to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstefanpems%2Fsentinel-utilities%2Frefs%2Fheads%2Fmain%2Fincident-lifecycle-automation%2Ffixed-state-diagram%2Fincident-lifecycle-NewIncidentFlow-azuredeploy.json)
-
-2. [![Deploy UpdatedInvestigationFlow to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstefanpems%2Fsentinel-utilities%2Frefs%2Fheads%2Fmain%2Fincident-lifecycle-automation%2Ffixed-state-diagram%2Fincident-lifecycle-UpdatedInvestigationFlow-azuredeploy.json)
-
-> **Nota:** Nei parametri di deployment delle logic app, utilizzare i riferimenti ai gruppi e alle liste creati nei passaggi precedenti.
-
-### 5. Configurazione delle Logic App
-
-Per ciascuna logic app:
-
-- Assegnare alla Managed Identity il ruolo di **Microsoft Sentinel Responder** sul resource group o sul workspace di Sentinel.
-- Autorizzare la connessione API a **Office 365 / SharePoint Online**.
-- Verificare la correttezza dei parametri e modificarli se necessario.
+* For each logic app:
+  - Assign the corresponding Managed Identity the role of Microsoft Sentinel Responder on the resource group or Sentinel workspace
+  - Authorize the API connection to Office 365 / SharePoint Online
+  - Verify the correctness of the parameters; modify their values if necessary
