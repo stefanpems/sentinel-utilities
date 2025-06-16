@@ -8,7 +8,8 @@
         "postDeployment":  [
             "Assign the role of Microsoft Sentinel Reponder to the workflow's managed identity at the Sentinel resource group or workspace level",
             "Autorize the API for the connection to SharePoint",
-            "Set the workflow parameters"
+            "Set the workflow parameters",
+            "Authorize Sentinel/Defender XDR to run the Logic App"
         ],
         "prerequisitesDeployTemplateFile":  "",
         "lastUpdateTime":  "",
