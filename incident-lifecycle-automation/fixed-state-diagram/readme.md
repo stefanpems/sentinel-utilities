@@ -1,7 +1,8 @@
+# Incident Lifecycle Automation - Fixed State Diagram - Sample Prototype
 
-Template dei workflow (Azure Logic App) per realizzare l'automazione descritta in [Incident Lifecycle Automation in the Microsoft Unified Security Operations Platform](https://www.linkedin.com/pulse/incident-lifecycle-automation-microsoft-unified-stefano-pescosolido-yro9f/)
+This folder contains a prototype of incident lifecycle automation for Sentinel incidents. Specifically, the folder contains 2 Workflow templates (Azure Logic App) to implement the automation described in [Incident Lifecycle Automation in the Microsoft Unified Security Operations Platform](https://www.linkedin.com/pulse/incident-lifecycle-automation-microsoft-unified-stefano-pescosolido-yro9f/)
 
-Si tratta di un'automazione con un diagramma di stato fisso, come descritto nell'articolo.
+This is an automation based on a fixed state diagram, as described in the article.
 
 ## Installation Steps
 
