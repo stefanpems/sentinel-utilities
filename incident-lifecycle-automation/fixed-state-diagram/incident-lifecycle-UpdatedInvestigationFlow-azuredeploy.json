@@ -128,7 +128,7 @@
                                     }
                                 },
                                 "method":  "get",
-                                "path":  "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharePointSiteUrl')))}/tables/@{encodeURIComponent(encodeURIComponent('0487d69c-6a3b-410a-8561-e3fdcb1938b7'))}/onupdateditems"
+                                "path":  "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharePointSiteUrl')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('SharePointListNameForInvestigations')))}/onupdateditems"
                             }
                         }
                     },
