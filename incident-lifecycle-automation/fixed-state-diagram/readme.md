@@ -24,6 +24,7 @@ This is an automation based on a fixed state diagram, as described in the articl
 
   NOTES:
   - The Tasks column of type Lookup must point to the Tasks list. Therefore, it can only be created after the Tasks list has been created.
+  - For the colums of type 'Choice' use exactly the values listed here above. If you want to change some of them, you also need to modify the Azure Logic Apps accordingly. 
   - In this list, create 3 custom views filtering by Status not equal to Closed and Tier equal to T3, T2, and T1 respectively. Name these views T3, T2, and T1. The corresponding URL must be saved as the access URL to the investigations list for Tier 3, 2, and 1 operators respectively.
   - You may, if desired, change the field order as they appear in the T3, T2, and T1 views and in the data entry forms.
   - It is possible and recommended to modify the data display form (Configure Layout / Body) so that the fields Status, Title, Main Incident, and Incident ARM ID are read-only.
@@ -50,9 +51,13 @@ This is an automation based on a fixed state diagram, as described in the articl
 
   NOTE: In the deployment parameters of the two logic apps, use the references to the groups and lists created as described above.
 
-* For each logic app:
-  - Assign the corresponding Managed Identity the role of Microsoft Sentinel Responder on the resource group or Sentinel workspace
-  - Authorize the API connection to Office 365 / SharePoint Online
-  - Verify the correctness of the parameters; modify their values if necessary
+* For each of the two Azure Logic Apps just deployed:
+  - Assign the corresponding Managed Identity the role of Microsoft Sentinel Responder on the resource group or Sentinel workspace (go to "Identity"  Azure role assignments" / "Add role assignment" / select Scope = Resource group", select the subscription & resource group used for Sentinel, select Role = "Microsoft Sentinel Responder") 
+  - Authorize the API connection to Office 365 / SharePoint Online (go to "API connections" / "Sharepointonline-<logicappname>" / Edit API connection / Authorize / authenticate with credentials that are members on both Lists; do not forget to save)
+  - Edit the workflow and verify the correctness of the parameters (they have the values specified during the deployment); modify their values if necessary.
  
-* Authorize Sentinel / Defender XDR to run the Logic App NewIncidentFlow
+* Authorize Sentinel / Defender XDR on the Resource Group of the newly deployed Logic App "NewIncidentFlow": in Defender XDR (with Sentinel integrated), selct an incidet, go to "Run playbook", go to the bottom of the list, identify the newly deployed Logic App "NewIncidentFlow", click on "Grant permissions".
+
+* Test the solution by manually running the newly deployed Logic App "NewIncidentFlow": in Defender XDR (with Sentinel integrated), selct an incidet, go to "Run playbook",  identify the newly deployed Logic App "NewIncidentFlow", click on "Run playbook". Go to the list of the investigations and check for the existance of the investigation created by the workflow. Proceed as shown in the demo (see the reference article in LinkedIn). 
+
+* In Defender XDR / Sentinel, if desired, create an Automation Rule to run the playbook automatically on new incidents.
