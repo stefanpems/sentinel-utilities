@@ -1,0 +1,26 @@
+// GetTacticsAndTechniquesForTruePositiveIncidents
+// Returns a summary of summary of the MITRE tactics and techniques related to the incidents that were classified as true positives
+let start_time = ago(90d);
+let end_time = now();
+let severities = dynamic(["High", "Medium", "Low"]);
+let top_incs_number = int(200);
+let real_tp_incidents = SecurityIncident
+| summarize arg_max(LastModifiedTime, *) by IncidentName
+| where Severity in (severities) and TimeGenerated between (start_time .. end_time) 
+| where Status != "Closed" or (Status == "Closed" and ModifiedBy != "Microsoft Defender XDR - alert correlation")
+| where Classification == "TruePositive"
+| extend SevNum =
+    case(
+        Severity == "Informational", 1,
+        Severity == "Low",           2,
+        Severity == "Medium",        3,
+        Severity == "High",          4,
+        Severity == "Critical",      5,
+        0
+    )
+| extend IncidentSeverityAndTitle = strcat("[",Severity,"] ",Title);
+real_tp_incidents
+| extend AdditionalDataParsed = parse_json(AdditionalData)
+| summarize Occurrences=count(), Tactics=make_set(AdditionalDataParsed.tactics), Techniques=make_set(AdditionalDataParsed.techniques) by IncidentSeverityAndTitle, SevNum, Title, Status
+| order by Occurrences desc, SevNum desc, Title asc     
+| project IncidentSeverityAndTitle, Occurrences, Status, Tactics, Techniques
