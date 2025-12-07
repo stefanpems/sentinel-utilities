@@ -1,0 +1,26 @@
+// Returns a summary of incidents grouped by severity and title, showing total count and classification breakdown  
+// (Closed, Benign Positive, False Positive, True Positive, Undetermined) for the selected time range.
+let start_time = datetime({start_date}); //E.g.: ago(24h); datetime(2025-11-01T00:00:00Z);
+let end_time = datetime({end_date}); //E.g. now(); 
+let severities = dynamic([{csv_of_severities}]);  //E.g.: dynamic(["High", "Medium", "Low"]);
+let top_incs_number = int({top_results_number}); //E.g.: 10
+let real_incidents = SecurityIncident
+| summarize arg_max(LastModifiedTime, *) by IncidentName
+| where Severity in (severities) and TimeGenerated between (start_time .. end_time) 
+| where Status != "Closed" or (Status == "Closed" and ModifiedBy != "Microsoft Defender XDR - alert correlation")
+| extend IncidentSeverityAndTitle = strcat("[",Severity,"] ",Title);
+let top_incidents = real_incidents
+| summarize TotalCount = count() by IncidentSeverityAndTitle;
+let classified_incidents = real_incidents
+| summarize ClosedCount = countif(Status == "Closed"),
+            BenignPositiveCount = countif(Classification == "BenignPositive"),
+            FalsePositiveCount = countif(Classification == "FalsePositive"),
+            TruePositiveCount = countif(Classification == "TruePositive"),
+            UndeterminedCount = countif(Classification == "Undetermined") by IncidentSeverityAndTitle;
+let results = top_incidents
+| join kind=leftouter (classified_incidents) on IncidentSeverityAndTitle     
+| order by TotalCount desc, IncidentSeverityAndTitle asc         
+| top top_incs_number by TotalCount;
+results
+| project IncidentSeverityAndTitle, TotalCount, ClosedCount, BenignPositiveCount, FalsePositiveCount, TruePositiveCount, UndeterminedCount
+| order by TotalCount desc, ClosedCount desc, TruePositiveCount desc  
